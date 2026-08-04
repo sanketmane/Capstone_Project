@@ -4,6 +4,8 @@ import com.example.productcatalogservice.models.Product;
 import com.example.productcatalogservice.repos.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,5 +53,10 @@ public class StorageProductService implements IProductService{
     @Override
     public Product deleteProduct(Long productId) {
         return null;
+    }
+
+    @Override
+    public Page<Product> getProductsByCategory(Long categoryId, Pageable pageable) {
+        return productRepo.findByCategoryId(categoryId, pageable);
     }
 }

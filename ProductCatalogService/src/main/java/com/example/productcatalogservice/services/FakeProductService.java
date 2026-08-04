@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
@@ -195,6 +198,20 @@ public class FakeProductService implements IProductService {
             return null;
         }
         return from(fakeStoreProductDtoOut);
+    }
+
+    // fakestoreapi has no category-filtered/paginated endpoint, so filter+paginate in-memory
+    @Override
+    public Page<Product> getProductsByCategory(Long categoryId, Pageable pageable) {
+        List<Product> matchingProducts = new ArrayList<>();
+        for (Product product : getAllProductDetails()) {
+            if (product.getCategory() != null && categoryId.equals(product.getCategory().getId())) {
+                matchingProducts.add(product);
+            }
+        }
+        int start = Math.min((int) pageable.getOffset(), matchingProducts.size());
+        int end = Math.min(start + pageable.getPageSize(), matchingProducts.size());
+        return new PageImpl<>(matchingProducts.subList(start, end), pageable, matchingProducts.size());
     }
 
     // We created

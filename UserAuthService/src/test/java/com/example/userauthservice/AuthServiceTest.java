@@ -1,7 +1,6 @@
 package com.example.userauthservice;
 
 import com.example.userauthservice.clients.KafkaClient;
-import com.example.userauthservice.dtos.EmailDto;
 import com.example.userauthservice.exceptions.InvalidTokenException;
 import com.example.userauthservice.exceptions.PasswordMismatchException;
 import com.example.userauthservice.exceptions.UnauthorizedException;

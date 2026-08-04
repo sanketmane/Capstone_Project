@@ -1,7 +1,7 @@
 package com.example.productcatalogservice.controllers;
 
+import com.example.productcatalogservice.dtos.ProductDto;
 import com.example.productcatalogservice.dtos.SearchRequestDto;
-import com.example.productcatalogservice.models.Product;
 import com.example.productcatalogservice.services.ISearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +22,7 @@ public class SearchController {
     // Generally, you can get request to search, but in this case
     // we are passing large params, hence used POST for that purpose
     @PostMapping
-    public Page<Product> searchProducts(@RequestBody SearchRequestDto searchRequestDto) {
+    public Page<ProductDto> searchProducts(@RequestBody SearchRequestDto searchRequestDto) {
         return searchService.searchProducts(
                 searchRequestDto.getSearchString(),
                 searchRequestDto.getPageNumber(),

@@ -1,14 +1,15 @@
 package com.example.productcatalogservice.controllers;
 
-import com.example.productcatalogservice.dtos.CategoryDto;
 import com.example.productcatalogservice.dtos.ProductDto;
-import com.example.productcatalogservice.models.Category;
+import com.example.productcatalogservice.dtos.ProductMapper;
 import com.example.productcatalogservice.models.Product;
 import com.example.productcatalogservice.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class ProductController {
         }
         List<ProductDto> productDtoList = new ArrayList<>();
         for(Product product : allProductDetails){
-            ProductDto productDto = from(product); // translate product to productDto
+            ProductDto productDto = ProductMapper.toDto(product); // translate product to productDto
             productDtoList.add(productDto);
         }
         // No need to define ResponseEntity<List<ProductDto> since method
@@ -77,8 +78,24 @@ public class ProductController {
         if(product == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-        ProductDto productDto = from(product);
+        ProductDto productDto = ProductMapper.toDto(product);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/products/category/{categoryId}")
+    public ResponseEntity<Page<ProductDto>> getProductsByCategory(
+            @PathVariable("categoryId") Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        if (categoryId < 0) {
+            throw new IllegalArgumentException("Category Id cannot be less than 0");
+        }
+        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        Page<Product> productPage = productService.getProductsByCategory(categoryId, pageable);
+        return new ResponseEntity<>(productPage.map(ProductMapper::toDto), HttpStatus.OK);
     }
 
     @PostMapping("/products")
@@ -93,12 +110,12 @@ public class ProductController {
 //        return product;
 //    }
     public ProductDto createProduct(@RequestBody ProductDto productDto){
-        Product inputProduct = from(productDto);
+        Product inputProduct = ProductMapper.toEntity(productDto);
         Product output = productService.createProduct(inputProduct);
         if(output == null) {
             return null;
         }
-        return from(output);
+        return ProductMapper.toDto(output);
     }
 
     // HW implementation
@@ -123,7 +140,7 @@ public class ProductController {
         if(deletedProduct == null) {
             return ResponseEntity.notFound().build(); // generates 404 NOT FOUND REQUEST with empty body
         }
-        return ResponseEntity.ok(from(deletedProduct)); // generates 200 OK with empty response
+        return ResponseEntity.ok(ProductMapper.toDto(deletedProduct)); // generates 200 OK with empty response
 
     }
 
@@ -146,47 +163,11 @@ public class ProductController {
         if(productId < 0){
             throw new IllegalArgumentException("Product Id cannot be less than 0");
         }
-        Product inputProduct = from(productDto);
+        Product inputProduct = ProductMapper.toEntity(productDto);
         Product output = productService.replaceProduct(productId, inputProduct);
         if(output == null) {
             return null;
         }
-        return from(output);
-    }
-
-    // mapping method to convert Product object to ProductDto
-    private ProductDto from(Product product) {
-        ProductDto productDto = new ProductDto();
-        productDto.setId(product.getId());
-        productDto.setName(product.getName());
-        productDto.setDescription(product.getDescription());
-        productDto.setPrice(product.getPrice());
-        productDto.setImageUrl(product.getImageUrl());
-        if(product.getCategory() != null) {
-            CategoryDto categoryDto = new CategoryDto();
-            categoryDto.setId(product.getCategory().getId()); // this will be null, because we don't have Id field in Category class
-            categoryDto.setName(product.getCategory().getName());
-            categoryDto.setDescription(product.getCategory().getDescription());
-            productDto.setCategory(categoryDto);
-        }
-        return productDto;
-    }
-
-    // mapping method to convert ProductDto object to Product
-    private Product from(ProductDto productDto) {
-        Product product = new Product();
-        product.setId(productDto.getId());
-        product.setName(productDto.getName());
-        product.setDescription(productDto.getDescription());
-        product.setPrice(productDto.getPrice());
-        product.setImageUrl(productDto.getImageUrl());
-        if(productDto.getCategory() != null) {
-            Category  category = new Category();
-            category.setId(productDto.getCategory().getId());
-            category.setName(productDto.getCategory().getName());
-            category.setDescription(productDto.getCategory().getDescription());
-            product.setCategory(category);
-        }
-        return product;
+        return ProductMapper.toDto(output);
     }
 }

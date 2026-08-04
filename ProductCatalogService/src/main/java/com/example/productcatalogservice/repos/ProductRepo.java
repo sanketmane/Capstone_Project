@@ -42,7 +42,10 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     @Query("SELECT p.description from Product p where p.id=:id")
     String getMeDescriptionForProductId(Long id);
 
-    // Query the search string in db and return a pageable response of Product
-    Page<Product> findByNameEquals(String searchString, Pageable pageable);
+    // Keyword search: case-insensitive substring match against name or description
+    Page<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            String name, String description, Pageable pageable);
+
+    Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
 
 }

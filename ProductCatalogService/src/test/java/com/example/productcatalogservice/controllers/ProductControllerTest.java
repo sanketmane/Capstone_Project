@@ -1,17 +1,25 @@
 package com.example.productcatalogservice.controllers;
 
 import com.example.productcatalogservice.dtos.ProductDto;
+import com.example.productcatalogservice.models.Category;
 import com.example.productcatalogservice.models.Product;
 import com.example.productcatalogservice.services.IProductService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -108,5 +116,45 @@ class ProductControllerTest {
         assertEquals(200000D,responseProductDto.getPrice());
     }
 
+    @Test
+    public void TestGetProductsByCategory_OnValidCategoryId_RunSuccessfully() {
+        //Arrange
+        Long categoryId = 1L;
+        Category category = new Category();
+        category.setId(categoryId);
+        category.setName("phones");
+
+        Product product = new Product();
+        product.setId(2L);
+        product.setName("Iphone 15");
+        product.setPrice(150000D);
+        product.setCategory(category);
+
+        Page<Product> productPage = new PageImpl<>(List.of(product), PageRequest.of(0, 10), 1);
+        when(productService.getProductsByCategory(eq(categoryId), any(Pageable.class))).thenReturn(productPage);
+
+        //Act
+        ResponseEntity<Page<ProductDto>> response =
+                productController.getProductsByCategory(categoryId, 0, 10, "id", "asc");
+
+        //Assert
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getContent().size());
+        assertEquals("Iphone 15", response.getBody().getContent().get(0).getName());
+        assertEquals(categoryId, response.getBody().getContent().get(0).getCategory().getId());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void TestGetProductsByCategory_WithInvalidCategoryId_ResultsInIllegalArgumentException() {
+        //Arrange
+        Long categoryId = -1L;
+
+        //Act and Assert
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> productController.getProductsByCategory(categoryId, 0, 10, "id", "asc"));
+        assertEquals("Category Id cannot be less than 0", exception.getMessage());
+    }
 
 }

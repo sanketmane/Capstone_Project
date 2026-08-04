@@ -1,5 +1,7 @@
 package com.example.productcatalogservice.services;
 
+import com.example.productcatalogservice.dtos.ProductDto;
+import com.example.productcatalogservice.dtos.ProductMapper;
 import com.example.productcatalogservice.dtos.SortParam;
 import com.example.productcatalogservice.dtos.SortType;
 import com.example.productcatalogservice.models.Product;
@@ -19,7 +21,7 @@ public class SearchService implements ISearchService {
     private ProductRepo productRepo;
 
     @Override
-    public Page<Product> searchProducts(String searchString,
+    public Page<ProductDto> searchProducts(String searchString,
                                         Integer pageNumber,
                                         Integer pageSize,
                                         List<SortParam> sortParamList) {
@@ -42,6 +44,8 @@ public class SearchService implements ISearchService {
         }
 
         // PageRequest class implements Pageable(that we pass in ProductRepo)
-        return productRepo.findByNameEquals(searchString, PageRequest.of(pageNumber,pageSize,sort));
+        Page<Product> productPage = productRepo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                searchString, searchString, PageRequest.of(pageNumber, pageSize, sort));
+        return productPage.map(ProductMapper::toDto);
     }
 }
