@@ -1,7 +1,9 @@
 package com.example.productcatalogservice.services;
 
+import com.example.productcatalogservice.dtos.ProductMapper;
 import com.example.productcatalogservice.models.Product;
 import com.example.productcatalogservice.repos.ProductRepo;
+import com.example.productcatalogservice.repos.ProductSearchRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,9 @@ public class StorageProductService implements IProductService{
 
     @Autowired
     private ProductRepo productRepo;
+
+    @Autowired
+    private ProductSearchRepo productSearchRepo;
 
 
     @Override
@@ -42,12 +47,16 @@ public class StorageProductService implements IProductService{
         if(productOptional.isPresent()){
             return productOptional.get();
         }
-        return productRepo.save(product);
+        Product savedProduct = productRepo.save(product);
+        productSearchRepo.save(ProductMapper.toDocument(savedProduct));
+        return savedProduct;
     }
 
     @Override
     public Product replaceProduct(Long id, Product product) {
-        return productRepo.save(product);
+        Product savedProduct = productRepo.save(product);
+        productSearchRepo.save(ProductMapper.toDocument(savedProduct));
+        return savedProduct;
     }
 
     @Override

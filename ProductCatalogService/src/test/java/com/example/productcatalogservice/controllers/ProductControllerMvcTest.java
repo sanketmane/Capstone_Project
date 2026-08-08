@@ -40,7 +40,7 @@ public class ProductControllerMvcTest {
     @Test
     public void TestGetAllProducts_ReturnsStatusOk() throws Exception {
         // Get the status after running /products
-        mockMvc.perform(get("/products")).andExpect(status().isOk());
+        mockMvc.perform(get("/api/products")).andExpect(status().isOk());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class ProductControllerMvcTest {
         String expectedResponse = objectMapper.writeValueAsString(productDtos);
 
         when(productService.getAllProductDetails()).thenReturn(allProducts);
-        mockMvc.perform(get("/products"))
+        mockMvc.perform(get("/api/products"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedResponse));
 
@@ -89,7 +89,7 @@ public class ProductControllerMvcTest {
         // is accepted.
         when(productService.createProduct(any(Product.class))).thenReturn(product);
 
-        mockMvc.perform(post("/products")
+        mockMvc.perform(post("/api/products")
                         // we need to pass MediaType.APPLICATION_JSON explicitly
                         // to declare i/p as of type JSON otherwise it assumes octet/stream and test will fail
                         .contentType(MediaType.APPLICATION_JSON)

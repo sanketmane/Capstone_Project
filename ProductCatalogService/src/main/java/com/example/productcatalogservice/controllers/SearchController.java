@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 // We will create a separate controller for Search functionality
 
 @RestController
-@RequestMapping("/search")
+@RequestMapping("/api/search")
 public class SearchController {
 
     @Autowired

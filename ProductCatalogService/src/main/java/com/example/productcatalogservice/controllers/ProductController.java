@@ -18,6 +18,7 @@ import java.util.List;
 // Practice the code here as it will be mostly asked during the mock interview
 
 @RestController
+@RequestMapping("/api")
 // This annotation helps to indicate this class follows REST principles
 // hence the output will be either JSON or XML.
 public class ProductController {

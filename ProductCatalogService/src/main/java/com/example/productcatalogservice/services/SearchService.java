@@ -1,11 +1,11 @@
 package com.example.productcatalogservice.services;
 
+import com.example.productcatalogservice.documents.ProductDocument;
 import com.example.productcatalogservice.dtos.ProductDto;
 import com.example.productcatalogservice.dtos.ProductMapper;
 import com.example.productcatalogservice.dtos.SortParam;
 import com.example.productcatalogservice.dtos.SortType;
-import com.example.productcatalogservice.models.Product;
-import com.example.productcatalogservice.repos.ProductRepo;
+import com.example.productcatalogservice.repos.ProductSearchRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +18,7 @@ import java.util.List;
 public class SearchService implements ISearchService {
 
     @Autowired
-    private ProductRepo productRepo;
+    private ProductSearchRepo productSearchRepo;
 
     @Override
     public Page<ProductDto> searchProducts(String searchString,
@@ -43,9 +43,11 @@ public class SearchService implements ISearchService {
             }
         }
 
-        // PageRequest class implements Pageable(that we pass in ProductRepo)
-        Page<Product> productPage = productRepo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-                searchString, searchString, PageRequest.of(pageNumber, pageSize, sort));
+        // Elasticsearch multi_match query gives full text search
+        // across name and description, instead of a plain SQL LIKE match.
+        Page<ProductDocument> productPage = productSearchRepo.searchByNameOrDescription(
+                searchString, PageRequest.of(pageNumber, pageSize, sort));
         return productPage.map(ProductMapper::toDto);
     }
 }
+
