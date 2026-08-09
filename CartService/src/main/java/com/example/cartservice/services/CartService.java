@@ -1,9 +1,7 @@
 package com.example.cartservice.services;
 
 import com.example.cartservice.dtos.AddToCartRequestDto;
-import com.example.cartservice.dtos.CheckoutRequestDto;
 import com.example.cartservice.models.Cart;
-import com.example.cartservice.models.Order;
 
 public interface CartService {
 
@@ -16,6 +14,4 @@ public interface CartService {
     Cart removeItem(Long userId, Long productId);
 
     void clearCart(Long userId);
-
-    Order checkout(Long userId, CheckoutRequestDto checkoutRequestDto);
 }

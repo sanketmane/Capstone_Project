@@ -1,7 +1,6 @@
 package com.example.cartservice.controllers;
 
 import com.example.cartservice.exceptions.CartNotFoundException;
-import com.example.cartservice.exceptions.EmptyCartException;
 import com.example.cartservice.exceptions.InvalidQuantityException;
 import com.example.cartservice.exceptions.ProductNotFoundException;
 import com.example.cartservice.exceptions.ProductNotInCartException;
@@ -19,7 +18,7 @@ public class ControllerAdvisor {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({EmptyCartException.class, InvalidQuantityException.class, IllegalArgumentException.class})
+    @ExceptionHandler({InvalidQuantityException.class, IllegalArgumentException.class})
     public ResponseEntity<String> handleBadRequest(RuntimeException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }

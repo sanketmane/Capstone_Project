@@ -2,18 +2,12 @@ package com.example.cartservice.services;
 
 import com.example.cartservice.clients.ProductServiceClient;
 import com.example.cartservice.dtos.AddToCartRequestDto;
-import com.example.cartservice.dtos.CheckoutRequestDto;
-import com.example.cartservice.dtos.DeliveryAddressDto;
 import com.example.cartservice.dtos.ProductDto;
 import com.example.cartservice.exceptions.CartNotFoundException;
-import com.example.cartservice.exceptions.EmptyCartException;
 import com.example.cartservice.exceptions.InvalidQuantityException;
 import com.example.cartservice.models.Cart;
 import com.example.cartservice.models.CartItem;
-import com.example.cartservice.models.Order;
-import com.example.cartservice.models.PaymentMethod;
 import com.example.cartservice.repos.CartRepo;
-import com.example.cartservice.repos.OrderRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,9 +32,6 @@ class CartServiceTest {
 
     @Mock
     private CartRepo cartRepo;
-
-    @Mock
-    private OrderRepo orderRepo;
 
     @Mock
     private RedisTemplate<String, Object> redisTemplate;
@@ -150,42 +141,4 @@ class CartServiceTest {
         assertThrows(CartNotFoundException.class, () -> cartService.updateItemQuantity(1L, 10L, 5));
     }
 
-    @Test
-    void checkout_throwsEmptyCartException_whenCartHasNoItems() {
-        Cart emptyCart = new Cart();
-        emptyCart.setUserId(1L);
-        when(cartRepo.findByUserId(1L)).thenReturn(Optional.of(emptyCart));
-
-        CheckoutRequestDto checkoutRequestDto = new CheckoutRequestDto();
-        checkoutRequestDto.setPaymentMethod(PaymentMethod.CARD);
-        checkoutRequestDto.setDeliveryAddress(new DeliveryAddressDto());
-
-        assertThrows(EmptyCartException.class, () -> cartService.checkout(1L, checkoutRequestDto));
-    }
-
-    @Test
-    void checkout_createsOrderAndClearsCart() {
-        Cart cart = new Cart();
-        cart.setUserId(1L);
-        CartItem item = new CartItem();
-        item.setProductId(10L);
-        item.setProductName("Laptop");
-        item.setPrice(1000.0);
-        item.setQuantity(1);
-        item.setSubtotal(1000.0);
-        cart.getItems().add(item);
-        cart.setTotalPrice(1000.0);
-        when(cartRepo.findByUserId(1L)).thenReturn(Optional.of(cart));
-        when(orderRepo.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        CheckoutRequestDto checkoutRequestDto = new CheckoutRequestDto();
-        checkoutRequestDto.setPaymentMethod(PaymentMethod.CARD);
-        checkoutRequestDto.setDeliveryAddress(new DeliveryAddressDto());
-
-        Order order = cartService.checkout(1L, checkoutRequestDto);
-
-        assertEquals(1000.0, order.getTotalAmount());
-        verify(cartRepo).deleteByUserId(1L);
-        verify(redisTemplate).delete("CART:1");
-    }
 }

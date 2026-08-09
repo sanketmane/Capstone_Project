@@ -2,19 +2,13 @@ package com.example.cartservice.services;
 
 import com.example.cartservice.clients.ProductServiceClient;
 import com.example.cartservice.dtos.AddToCartRequestDto;
-import com.example.cartservice.dtos.CheckoutRequestDto;
 import com.example.cartservice.dtos.ProductDto;
 import com.example.cartservice.exceptions.CartNotFoundException;
-import com.example.cartservice.exceptions.EmptyCartException;
 import com.example.cartservice.exceptions.InvalidQuantityException;
 import com.example.cartservice.exceptions.ProductNotInCartException;
-import com.example.cartservice.mappers.CartMapper;
 import com.example.cartservice.models.Cart;
 import com.example.cartservice.models.CartItem;
-import com.example.cartservice.models.Order;
-import com.example.cartservice.models.OrderStatus;
 import com.example.cartservice.repos.CartRepo;
-import com.example.cartservice.repos.OrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -28,9 +22,6 @@ public class CartServiceImpl implements CartService {
 
     @Autowired
     private CartRepo cartRepo;
-
-    @Autowired
-    private OrderRepo orderRepo;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -108,28 +99,6 @@ public class CartServiceImpl implements CartService {
     public void clearCart(Long userId) {
         cartRepo.deleteByUserId(userId);
         redisTemplate.delete(cacheKey(userId));
-    }
-
-    @Override
-    public Order checkout(Long userId, CheckoutRequestDto checkoutRequestDto) {
-        Cart cart = cartRepo.findByUserId(userId)
-                .orElseThrow(() -> new CartNotFoundException("Cart not found for userId: " + userId));
-        if (cart.getItems().isEmpty()) {
-            throw new EmptyCartException("Cannot checkout an empty cart");
-        }
-
-        Order order = new Order();
-        order.setUserId(userId);
-        order.setItems(cart.getItems());
-        order.setTotalAmount(cart.getTotalPrice());
-        order.setDeliveryAddress(CartMapper.toEntity(checkoutRequestDto.getDeliveryAddress()));
-        order.setPaymentMethod(checkoutRequestDto.getPaymentMethod());
-        order.setOrderedAt(new Date());
-        order.setStatus(OrderStatus.PLACED);
-        Order savedOrder = orderRepo.save(order);
-
-        clearCart(userId);
-        return savedOrder;
     }
 
     private Cart persist(Cart cart) {

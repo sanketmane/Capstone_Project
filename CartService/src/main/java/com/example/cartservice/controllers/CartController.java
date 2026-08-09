@@ -2,12 +2,9 @@ package com.example.cartservice.controllers;
 
 import com.example.cartservice.dtos.AddToCartRequestDto;
 import com.example.cartservice.dtos.CartDto;
-import com.example.cartservice.dtos.CheckoutRequestDto;
-import com.example.cartservice.dtos.OrderDto;
 import com.example.cartservice.dtos.UpdateCartItemRequestDto;
 import com.example.cartservice.mappers.CartMapper;
 import com.example.cartservice.models.Cart;
-import com.example.cartservice.models.Order;
 import com.example.cartservice.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,12 +57,5 @@ public class CartController {
     public ResponseEntity<Void> clearCart(@PathVariable("userId") Long userId) {
         cartService.clearCart(userId);
         return ResponseEntity.noContent().build(); // build() method is used to create a ResponseEntity with no content.
-    }
-
-    @PostMapping("/{userId}/checkout")
-    public ResponseEntity<OrderDto> checkout(@PathVariable("userId") Long userId,
-                                              @RequestBody CheckoutRequestDto checkoutRequestDto) {
-        Order order = cartService.checkout(userId, checkoutRequestDto);
-        return ResponseEntity.ok(CartMapper.toDto(order));
     }
 }
