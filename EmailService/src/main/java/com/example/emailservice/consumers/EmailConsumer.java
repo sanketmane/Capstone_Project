@@ -17,7 +17,7 @@ import java.util.Properties;
 @Component
 public class EmailConsumer {
 
-    private static final String FROM_ADDRESS = "anuragonhiring@gmail.com";
+    private static final String FROM_ADDRESS = "sanket.mane@gmail.com";
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -29,6 +29,16 @@ public class EmailConsumer {
     // To avoid that, groupId selects only 1 instance to do the actual work.
     @KafkaListener(topics = "signup", groupId = "emailService")
     public void sendEmail(String message) {
+        sendEmailFromDto(message);
+    }
+
+    // password-reset carries a pre-formatted EmailDto (same shape as signup) with the reset link in the body
+    @KafkaListener(topics = "password-reset", groupId = "emailService")
+    public void sendPasswordResetEmail(String message) {
+        sendEmailFromDto(message);
+    }
+
+    private void sendEmailFromDto(String message) {
         try {
             EmailDto emailDto = objectMapper.readValue(message, EmailDto.class);
             Session session = buildSession(emailDto.getFrom());
