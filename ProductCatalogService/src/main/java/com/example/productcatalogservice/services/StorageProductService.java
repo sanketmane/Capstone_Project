@@ -43,10 +43,6 @@ public class StorageProductService implements IProductService{
 
     @Override
     public Product createProduct(Product product) {
-        Optional<Product> productOptional = productRepo.findById(product.getId());
-        if(productOptional.isPresent()){
-            return productOptional.get();
-        }
         Product savedProduct = productRepo.save(product);
         productSearchRepo.save(ProductMapper.toDocument(savedProduct));
         return savedProduct;
@@ -54,6 +50,7 @@ public class StorageProductService implements IProductService{
 
     @Override
     public Product replaceProduct(Long id, Product product) {
+        product.setId(id);
         Product savedProduct = productRepo.save(product);
         productSearchRepo.save(ProductMapper.toDocument(savedProduct));
         return savedProduct;

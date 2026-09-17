@@ -2,6 +2,8 @@ package com.example.productcatalogservice.models;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +15,7 @@ import java.util.Date;
 // columns to the child classes(models)
 public abstract class BaseModel {
     @Id // this annotation makes below id attribute as primary_key in the child class tables/models
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Date createdAt;
     private Date lastUpdatedAt;
