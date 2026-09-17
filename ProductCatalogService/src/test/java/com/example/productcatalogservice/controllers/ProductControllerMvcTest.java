@@ -1,6 +1,7 @@
 package com.example.productcatalogservice.controllers;
 
 import com.example.productcatalogservice.dtos.ProductDto;
+import com.example.productcatalogservice.dtos.ProductRequestDto;
 import com.example.productcatalogservice.models.Product;
 import com.example.productcatalogservice.services.IProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,6 +80,10 @@ public class ProductControllerMvcTest {
         product.setName("Iphone");
         product.setDescription("Iphone 16");
 
+        ProductRequestDto productRequestDto = new ProductRequestDto();
+        productRequestDto.setName("Iphone");
+        productRequestDto.setDescription("Iphone 16");
+
         ProductDto productDto = new ProductDto();
         productDto.setId(product.getId());
         productDto.setName("Iphone");
@@ -94,7 +99,7 @@ public class ProductControllerMvcTest {
                         // to declare i/p as of type JSON otherwise it assumes octet/stream and test will fail
                         .contentType(MediaType.APPLICATION_JSON)
                         // pass json as string as i/p
-                        .content(objectMapper.writeValueAsString(productDto)))
+                        .content(objectMapper.writeValueAsString(productRequestDto)))
                         .andExpect(status().isOk())
                         .andExpect(content().string(objectMapper.writeValueAsString(productDto)));
 

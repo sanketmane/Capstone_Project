@@ -1,6 +1,7 @@
 package com.example.productcatalogservice.controllers;
 
 import com.example.productcatalogservice.dtos.ProductDto;
+import com.example.productcatalogservice.dtos.ProductRequestDto;
 import com.example.productcatalogservice.models.Category;
 import com.example.productcatalogservice.models.Product;
 import com.example.productcatalogservice.services.IProductService;
@@ -90,8 +91,7 @@ class ProductControllerTest {
     @Test
     public void TestCreateProductWithValidInput_RunSuccessfully() {
         //Arrange
-        ProductDto input = new ProductDto();
-        input.setId(10L);
+        ProductRequestDto input = new ProductRequestDto();
         input.setName("MacBook Air");
         input.setPrice(200000D);
 

@@ -67,12 +67,24 @@ public class ProductMapper {
             return null;
         }
         Product product = new Product();
-        product.setId(productDto.getId());
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
         product.setImageUrl(productDto.getImageUrl());
         product.setCategory(toEntity(productDto.getCategory()));
+        return product;
+    }
+
+    public static Product toEntity(ProductRequestDto productRequestDto) {
+        if (productRequestDto == null) {
+            return null;
+        }
+        Product product = new Product();
+        product.setName(productRequestDto.getName());
+        product.setDescription(productRequestDto.getDescription());
+        product.setPrice(productRequestDto.getPrice());
+        product.setImageUrl(productRequestDto.getImageUrl());
+        product.setCategory(toEntity(productRequestDto.getCategory()));
         return product;
     }
 

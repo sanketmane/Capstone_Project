@@ -2,6 +2,7 @@ package com.example.productcatalogservice.controllers;
 
 import com.example.productcatalogservice.dtos.ProductDto;
 import com.example.productcatalogservice.dtos.ProductMapper;
+import com.example.productcatalogservice.dtos.ProductRequestDto;
 import com.example.productcatalogservice.models.Product;
 import com.example.productcatalogservice.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,8 +111,8 @@ public class ProductController {
 //        products.add(product);
 //        return product;
 //    }
-    public ProductDto createProduct(@RequestBody ProductDto productDto){
-        Product inputProduct = ProductMapper.toEntity(productDto);
+    public ProductDto createProduct(@RequestBody ProductRequestDto productRequestDto){
+        Product inputProduct = ProductMapper.toEntity(productRequestDto);
         Product output = productService.createProduct(inputProduct);
         if(output == null) {
             return null;
@@ -160,11 +161,11 @@ public class ProductController {
 //            }
 //        }
 //        return null;
-    public ProductDto replaceProduct(@PathVariable("id") Long productId, @RequestBody ProductDto productDto) {
+    public ProductDto replaceProduct(@PathVariable("id") Long productId, @RequestBody ProductRequestDto productRequestDto) {
         if(productId < 0){
             throw new IllegalArgumentException("Product Id cannot be less than 0");
         }
-        Product inputProduct = ProductMapper.toEntity(productDto);
+        Product inputProduct = ProductMapper.toEntity(productRequestDto);
         Product output = productService.replaceProduct(productId, inputProduct);
         if(output == null) {
             return null;

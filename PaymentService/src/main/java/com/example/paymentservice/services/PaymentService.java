@@ -64,6 +64,15 @@ public class PaymentService {
     // called by webhook controllers once the gateway confirms a successful payment; idempotent on retries
     public void handlePaymentSuccess(String orderId, String gatewayReference) {
         Payment payment = paymentRepo.findByOrderId(orderId).orElse(null);
+        completePayment(payment, gatewayReference);
+    }
+
+    public void handlePaymentSuccessByGatewayReference(String gatewayReference) {
+        Payment payment = paymentRepo.findByGatewayReference(gatewayReference).orElse(null);
+        completePayment(payment, gatewayReference);
+    }
+
+    private void completePayment(Payment payment, String gatewayReference) {
         if (payment == null || payment.getStatus() == PaymentStatus.SUCCESS) {
             return;
         }
@@ -71,13 +80,22 @@ public class PaymentService {
         payment.setGatewayReference(gatewayReference);
         paymentRepo.save(payment);
 
-        orderServiceClient.updateOrderStatus(Long.parseLong(orderId), "COMPLETED");
+        orderServiceClient.updateOrderStatus(Long.parseLong(payment.getOrderId()), "COMPLETED");
         publishPaymentCompletedEvent(payment);
     }
 
     // called by webhook controllers when a session/payment link expires or fails; order stays PENDING for retry
     public void handlePaymentFailure(String orderId) {
         Payment payment = paymentRepo.findByOrderId(orderId).orElse(null);
+        failPayment(payment);
+    }
+
+    public void handlePaymentFailureByGatewayReference(String gatewayReference) {
+        Payment payment = paymentRepo.findByGatewayReference(gatewayReference).orElse(null);
+        failPayment(payment);
+    }
+
+    private void failPayment(Payment payment) {
         if (payment == null || payment.getStatus() != PaymentStatus.PENDING) {
             return;
         }
