@@ -11,5 +11,7 @@ public class PaymentRequestDto {
     String phoneNumber;
     String name;
     String email;
+    // client's preferred gateway; null defaults to STRIPE (see PaymentGatewayChooserStrategy)
+    PaymentGatewayType gateway;
 
 }

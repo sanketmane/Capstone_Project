@@ -2,10 +2,12 @@ package com.example.emailservice.consumers;
 
 import com.example.emailservice.dtos.EmailDto;
 import com.example.emailservice.dtos.OrderPlacedEventDto;
+import com.example.emailservice.dtos.PaymentCompletedEventDto;
 import com.example.emailservice.util.EmailUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +19,14 @@ import java.util.Properties;
 @Component
 public class EmailConsumer {
 
-    private static final String FROM_ADDRESS = "sanket.mane@gmail.com";
-
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Value("${mail.username}")
+    private String mailUsername;
+
+    @Value("${mail.password}")
+    private String mailPassword;
 
     // @KafkaListener annotation helps to declare a method
     // that will be called when a topic arrives at the consumer side.
@@ -41,7 +47,7 @@ public class EmailConsumer {
     private void sendEmailFromDto(String message) {
         try {
             EmailDto emailDto = objectMapper.readValue(message, EmailDto.class);
-            Session session = buildSession(emailDto.getFrom());
+            Session session = buildSession();
             EmailUtil.sendEmail(session, emailDto.getTo(), emailDto.getSubject(), emailDto.getBody());
         }catch (JsonProcessingException exception) {
             throw new RuntimeException(exception.getMessage());
@@ -58,14 +64,31 @@ public class EmailConsumer {
                     + "Order #" + event.getOrderId() + "\n"
                     + "Items: " + event.getItemCount() + "\n"
                     + "Total: " + event.getTotalAmount();
-            Session session = buildSession(FROM_ADDRESS);
+            Session session = buildSession();
             EmailUtil.sendEmail(session, event.getEmail(), subject, body);
         } catch (JsonProcessingException exception) {
             throw new RuntimeException(exception.getMessage());
         }
     }
 
-    private Session buildSession(String fromAddress) {
+    // payment.completed carries raw payment fields, published by PaymentService after webhook confirmation
+    @KafkaListener(topics = "payment.completed", groupId = "emailService")
+    public void sendPaymentConfirmationEmail(String message) {
+        try {
+            PaymentCompletedEventDto event = objectMapper.readValue(message, PaymentCompletedEventDto.class);
+            String subject = "Payment Successful - Order #" + event.getOrderId();
+            String body = "Your payment has been received successfully.\n"
+                    + "Order #" + event.getOrderId() + "\n"
+                    + "Amount: " + event.getAmount() + "\n"
+                    + "Gateway: " + event.getGateway();
+            Session session = buildSession();
+            EmailUtil.sendEmail(session, event.getEmail(), subject, body);
+        } catch (JsonProcessingException exception) {
+            throw new RuntimeException(exception.getMessage());
+        }
+    }
+
+    private Session buildSession() {
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
         props.put("mail.smtp.port", "587"); //TLS Port
@@ -76,7 +99,7 @@ public class EmailConsumer {
         Authenticator auth = new Authenticator() {
             //override the getPasswordAuthentication method
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(fromAddress, ""); // add pass separately
+                return new PasswordAuthentication(mailUsername, mailPassword);
             }
         };
         return Session.getInstance(props, auth); // establish email session

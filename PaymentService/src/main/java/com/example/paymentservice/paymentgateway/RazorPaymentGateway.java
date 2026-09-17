@@ -14,7 +14,7 @@ public class RazorPaymentGateway implements IPaymentGateway{
     private RazorpayClient razorpayClient;
 
     @Override
-    public String generatePaymentLink(Long amount, String orderId, String phoneNumber, String name, String email) {
+    public PaymentLinkResult generatePaymentLink(Long amount, String orderId, String phoneNumber, String name, String email) {
         try {
             JSONObject paymentLinkRequest = new JSONObject();
             paymentLinkRequest.put("amount", amount);
@@ -41,7 +41,7 @@ public class RazorPaymentGateway implements IPaymentGateway{
             paymentLinkRequest.put("callback_method", "get");
 
             PaymentLink payment = razorpayClient.paymentLink.create(paymentLinkRequest);
-            return payment.get("short_url").toString();
+            return new PaymentLinkResult(payment.get("short_url").toString(), payment.get("id").toString());
         } catch (RazorpayException e) {
             throw new RuntimeException(e.getMessage());
         }

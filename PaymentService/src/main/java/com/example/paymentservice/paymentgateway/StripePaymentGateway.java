@@ -16,7 +16,7 @@ public class StripePaymentGateway implements IPaymentGateway {
     private String stripeApiKey;
 
     @Override
-    public String generatePaymentLink(Long amount, String orderId, String phoneNumber, String name, String email) {
+    public PaymentLinkResult generatePaymentLink(Long amount, String orderId, String phoneNumber, String name, String email) {
         try {
             Stripe.apiKey = this.stripeApiKey;
             Price price = createPrice(amount);
@@ -26,14 +26,17 @@ public class StripePaymentGateway implements IPaymentGateway {
                                     .setPrice(price.getId())
                                     .setQuantity(1L)
                                     .build()
-                    ).setAfterCompletion(PaymentLinkCreateParams.AfterCompletion.builder() // extensive use of builder pattern
+                    )
+                    // copied onto the resulting Checkout Session, lets the webhook recover the orderId
+                    .putMetadata("orderId", orderId)
+                    .setAfterCompletion(PaymentLinkCreateParams.AfterCompletion.builder() // extensive use of builder pattern
                             .setType(PaymentLinkCreateParams.AfterCompletion.Type.REDIRECT)
                             .setRedirect(PaymentLinkCreateParams.AfterCompletion.Redirect.builder()
-                                    .setUrl("https://scaler.com").build())
+                                    .setUrl("https://google.com").build())
                             .build())
                     .build();
             PaymentLink paymentLink = PaymentLink.create(params);
-            return paymentLink.getUrl();
+            return new PaymentLinkResult(paymentLink.getUrl(), paymentLink.getId());
         } catch (StripeException e) {
             throw new RuntimeException(e.getMessage());
         }

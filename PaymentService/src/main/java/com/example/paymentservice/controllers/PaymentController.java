@@ -22,7 +22,8 @@ public class PaymentController {
                 paymentRequestDto.getOrderId(),
                 paymentRequestDto.getPhoneNumber(),
                 paymentRequestDto.getName(),
-                paymentRequestDto.getEmail()
+                paymentRequestDto.getEmail(),
+                paymentRequestDto.getGateway()
         );
 
     }
