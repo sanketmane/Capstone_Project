@@ -1,0 +1,4 @@
+com/example/apigateway/GatewayRoutingTest.class
+com/example/apigateway/filters/JwtAuthenticationFilterTest.class
+com/example/apigateway/ApiGatewayApplicationTests.class
+com/example/apigateway/GatewayRoutingTest$TestRoutesConfig.class

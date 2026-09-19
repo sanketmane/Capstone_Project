@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: APIGateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: lb://UserManagementService
+              predicates:
+                - Path=/api/auth/**
+
+            - id: cart-service
+              uri: lb://CartService
+              predicates:
+                - Path=/api/cart/**
+
+            - id: order-service
+              uri: lb://OrderManagementService
+              predicates:
+                - Path=/api/orders/**
+
+            - id: product-catalog-service
+              uri: lb://ProductCatalogService
+              predicates:
+                - Path=/api/products/**,/api/categories/**,/api/search/**
+
+            - id: payment-service
+              uri: lb://PaymentService
+              predicates:
+                - Path=/payment
+
+            - id: payment-webhook
+              uri: lb://PaymentService
+              predicates:
+                - Path=/api/payments/webhook/**
+
+server:
+  port: 8000
+
+# Base64 HS256 key, must match UserManagementService's jwt.secret.
+jwt:
+  secret: ${JWT_SECRET}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true

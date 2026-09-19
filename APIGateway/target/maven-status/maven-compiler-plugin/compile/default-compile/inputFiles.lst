@@ -1,0 +1,3 @@
+/Users/smane/Capstone_Project/APIGateway/src/main/java/com/example/apigateway/ApiGatewayApplication.java
+/Users/smane/Capstone_Project/APIGateway/src/main/java/com/example/apigateway/config/JwtConfig.java
+/Users/smane/Capstone_Project/APIGateway/src/main/java/com/example/apigateway/filters/JwtAuthenticationFilter.java

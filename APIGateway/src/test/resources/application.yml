@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: lb://UserManagementService
+              predicates:
+                - Path=/api/auth/**
+
+jwt:
+  secret: A+yhkQ/M9wjj8byALCGrxDcEkb8rkl/pPfl1hWUuz7g=
+
+eureka:
+  client:
+    enabled: false

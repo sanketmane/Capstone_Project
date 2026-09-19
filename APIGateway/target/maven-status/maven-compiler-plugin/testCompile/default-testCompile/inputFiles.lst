@@ -1,0 +1,3 @@
+/Users/smane/Capstone_Project/APIGateway/src/test/java/com/example/apigateway/ApiGatewayApplicationTests.java
+/Users/smane/Capstone_Project/APIGateway/src/test/java/com/example/apigateway/GatewayRoutingTest.java
+/Users/smane/Capstone_Project/APIGateway/src/test/java/com/example/apigateway/filters/JwtAuthenticationFilterTest.java

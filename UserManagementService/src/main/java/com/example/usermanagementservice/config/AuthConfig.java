@@ -1,7 +1,8 @@
 package com.example.usermanagementservice.config;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.MacAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -13,6 +14,10 @@ import javax.crypto.SecretKey;
 
 @Configuration
 public class AuthConfig {
+
+    // Base64-encoded HS256 key, must be shared with APIGateway so it can validate the same tokens.
+    @Value("${jwt.secret}")
+    private String jwtSecretBase64;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -38,8 +43,7 @@ public class AuthConfig {
 
     @Bean
     public SecretKey secretKey() {
-        MacAlgorithm algorithm = Jwts.SIG.HS256; // Hashing algo
-        SecretKey secretKey = algorithm.key().build(); // Secret
-        return secretKey;
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecretBase64);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }
