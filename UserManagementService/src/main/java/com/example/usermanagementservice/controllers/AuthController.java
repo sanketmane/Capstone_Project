@@ -57,7 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("/validateToken")
-    public Boolean validateToken(@RequestBody ValidateTokenRequestDto validateTokenRequestDto) {
+    public String validateToken(@RequestBody ValidateTokenRequestDto validateTokenRequestDto) {
 
         Boolean tokenStatus = authService.validateToken(
                 validateTokenRequestDto.getToken(),
@@ -67,7 +67,7 @@ public class AuthController {
             throw new UnauthorizedException("Please login again!");
         }
 
-        return tokenStatus;
+        return "Token valid: " + tokenStatus;
     }
 
 
