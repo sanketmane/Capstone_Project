@@ -86,8 +86,8 @@ public class AuthService implements IAuthService {
             EmailDto emailDto = new EmailDto();
             emailDto.setFrom("sanket.mane@gmail.com");
             emailDto.setTo(email);
-            emailDto.setSubject("Welcome!");
-            emailDto.setBody("Have a nice day!");
+            emailDto.setSubject("Welcome " + name + "!");
+            emailDto.setBody("Thanks for signing up, " + name + "!");
             kafkaClient.sendMessage("signup", objectMapper.writeValueAsString(emailDto));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e.getMessage());
@@ -232,7 +232,6 @@ public class AuthService implements IAuthService {
             throw new RuntimeException(e.getMessage());
         }
 
-        // returned directly since email delivery isn't reliably configured yet (see EmailService SMTP setup)
         return resetToken.getToken();
     }
 
