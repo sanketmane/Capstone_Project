@@ -11,6 +11,9 @@ import com.example.usermanagementservice.dtos.ValidateTokenRequestDto;
 import com.example.usermanagementservice.exceptions.UnauthorizedException;
 import com.example.usermanagementservice.models.User;
 import com.example.usermanagementservice.services.IAuthService;
+
+import java.util.HashMap;
+
 import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -40,20 +43,24 @@ public class AuthController {
     @PostMapping("/login")
     // test by making post login and check cookie in response
     // copy the jwt and check in jwt.io
-    public ResponseEntity<UserDto> login(@RequestBody LoginRequestDto loginRequestDto){
+    // public ResponseEntity<UserDto> login(@RequestBody LoginRequestDto loginRequestDto){
+    public ResponseEntity<HashMap<String, String>> login(@RequestBody LoginRequestDto loginRequestDto){
         String email = loginRequestDto.getEmail();
         String password = loginRequestDto.getPassword();
         Pair<User,String> response = authService.login(email, password);
         // Since Pair object consists of 2 objects,
         // they can be accessed as object.a and object.b
-        UserDto userDto = from(response.a); // prepare userDto object from User object
+        // UserDto userDto = from(response.a); // prepare userDto object from User object
         String token = response.b;
 
         // To set headers, you need to use MultiValueMap only
         // jwt is set in cookie
         MultiValueMap<String,String> headers = new LinkedMultiValueMap<>();
         headers.add(HttpHeaders.SET_COOKIE, token);
-        return new ResponseEntity<UserDto>(userDto, headers, HttpStatus.OK);
+        // return new ResponseEntity<UserDto>(userDto, headers, HttpStatus.OK);
+        HashMap<String, String> responseBody = new HashMap<>();
+        responseBody.put("accessToken", token);
+        return new ResponseEntity<HashMap<String, String>>(responseBody, headers, HttpStatus.OK);
     }
 
     @PostMapping("/validateToken")
