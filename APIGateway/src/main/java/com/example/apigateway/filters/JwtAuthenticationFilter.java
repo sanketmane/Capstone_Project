@@ -1,4 +1,4 @@
-package main.java.com.example.apigateway.filters;
+package com.example.apigateway.filters;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

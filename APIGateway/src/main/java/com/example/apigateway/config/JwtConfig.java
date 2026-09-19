@@ -1,4 +1,4 @@
-package main.java.com.example.apigateway.config;
+package com.example.apigateway.config;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

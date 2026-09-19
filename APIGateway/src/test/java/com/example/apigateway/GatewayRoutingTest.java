@@ -1,4 +1,4 @@
-package test.java.com.example.apigateway;
+package com.example.apigateway;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;

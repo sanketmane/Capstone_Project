@@ -1,4 +1,4 @@
-package test.java.com.example.apigateway.filters;
+package com.example.apigateway.filters;
 
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeEach;
