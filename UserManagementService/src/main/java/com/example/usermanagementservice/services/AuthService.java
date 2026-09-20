@@ -226,7 +226,7 @@ public class AuthService implements IAuthService {
             emailDto.setFrom("test@gmail.com");
             emailDto.setTo(email);
             emailDto.setSubject("Password Reset Request");
-            emailDto.setBody("Click to reset your password: http://localhost:3000/reset-password?token=" + resetToken.getToken());
+            emailDto.setBody("Your password reset token is: " + resetToken.getToken());
             kafkaClient.sendMessage("password-reset", objectMapper.writeValueAsString(emailDto));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e.getMessage());
