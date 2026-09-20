@@ -138,11 +138,8 @@ public class ProductController {
 //            return ResponseEntity.badRequest().build(); // generates 400 BAD REQUEST with empty body
             throw new IllegalArgumentException("Product Id cannot be less than 0");
         }
-        Product deletedProduct = productService.deleteProduct(productId);
-        if(deletedProduct == null) {
-            return ResponseEntity.notFound().build(); // generates 404 NOT FOUND REQUEST with empty body
-        }
-        return ResponseEntity.ok(ProductMapper.toDto(deletedProduct)); // generates 200 OK with empty response
+        productService.deleteProduct(productId);
+        return ResponseEntity.ok().build(); // generates 200 OK with empty response
 
     }
 

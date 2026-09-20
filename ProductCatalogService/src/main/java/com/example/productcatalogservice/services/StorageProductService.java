@@ -57,9 +57,15 @@ public class StorageProductService implements IProductService{
     }
 
     @Override
-    public Product deleteProduct(Long productId) {
-        return null;
+    public void deleteProduct(Long productId) {
+        Optional<Product> productOptional = productRepo.findById(productId);
+        if(productOptional.isPresent()){
+            Product product = productOptional.get();
+            productRepo.delete(product);
+            productSearchRepo.deleteById(productId);
+        }
     }
+    
 
     @Override
     public Page<Product> getProductsByCategory(Long categoryId, Pageable pageable) {

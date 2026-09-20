@@ -192,12 +192,10 @@ public class FakeProductService implements IProductService {
 //        return null;
 //    }
 
-    public Product deleteProduct(Long productId) {
-        FakeStoreProductDto fakeStoreProductDtoOut = fakeStoreApiClient.deleteProduct(productId);
-        if (fakeStoreProductDtoOut == null) {
-            return null;
-        }
-        return from(fakeStoreProductDtoOut);
+    public void deleteProduct(Long productId) {
+        // FakeStoreProductDto fakeStoreProductDtoOut = fakeStoreApiClient.deleteProduct(productId);
+        // Since the method is void, we don't return anything
+        fakeStoreApiClient.deleteProduct(productId);
     }
 
     // fakestoreapi has no category-filtered/paginated endpoint, so filter+paginate in-memory

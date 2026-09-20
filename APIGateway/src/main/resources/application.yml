@@ -31,7 +31,7 @@ spring:
             - id: payment-service
               uri: lb://PaymentService
               predicates:
-                - Path=/payment
+                - Path=/api/payments
 
             - id: payment-webhook
               uri: lb://PaymentService

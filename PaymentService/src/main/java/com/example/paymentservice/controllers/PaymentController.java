@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/api")
 public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
 
-    @PostMapping
+    @PostMapping("/payments")
     public String initiatePayment(@RequestBody PaymentRequestDto paymentRequestDto) {
         return paymentService.getPaymentLink(
                 paymentRequestDto.getAmount(),

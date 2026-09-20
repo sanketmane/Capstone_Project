@@ -84,7 +84,7 @@ public class AuthService implements IAuthService {
         // send message via kafka to EmailService
         try {
             EmailDto emailDto = new EmailDto();
-            emailDto.setFrom("sanket.mane@gmail.com");
+            emailDto.setFrom("test@gmail.com");
             emailDto.setTo(email);
             emailDto.setSubject("Welcome " + name + "!");
             emailDto.setBody("Thanks for signing up, " + name + "!");
@@ -223,7 +223,7 @@ public class AuthService implements IAuthService {
 
         try {
             EmailDto emailDto = new EmailDto();
-            emailDto.setFrom("sanket.mane@gmail.com");
+            emailDto.setFrom("test@gmail.com");
             emailDto.setTo(email);
             emailDto.setSubject("Password Reset Request");
             emailDto.setBody("Click to reset your password: http://localhost:3000/reset-password?token=" + resetToken.getToken());
