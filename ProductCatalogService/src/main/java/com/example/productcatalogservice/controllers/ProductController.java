@@ -120,19 +120,8 @@ public class ProductController {
         return ProductMapper.toDto(output);
     }
 
-    // HW implementation
-    // For delete, we will return the deleted entity in the body with 200 OK response.
+
     @DeleteMapping("/products/{id}")
-//    public String deleteProduct(@PathVariable("id") Long productId) {
-//        List<Product> products = productService.getAllProductDetails();
-//        for (Product product : products) {
-//            if (product.getId().equals(productId)) {
-//                products.remove(product);
-//                return "Product deleted!";
-//            }
-//        }
-//        return "Product not found!";
-//    }
     public ResponseEntity<ProductDto> deleteProduct(@PathVariable("id") Long productId){
         if(productId < 0){
 //            return ResponseEntity.badRequest().build(); // generates 400 BAD REQUEST with empty body
