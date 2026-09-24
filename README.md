@@ -1,6 +1,6 @@
 # Capstone Project
 
-A SpringBoot microservices based demo E-commerce application.
+A SpringBoot microservices based backend e-commerce application.
 
 ## Services
 
